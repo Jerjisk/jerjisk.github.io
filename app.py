@@ -23,7 +23,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
-def upload_file():
+def upload_moves():
     san_moves = request.form['moves'].split()
     
     try:
