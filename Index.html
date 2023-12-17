@@ -4,36 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chess Move Analyzer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles_without_ocr.css') }}">
 </head>
 <body>
     <h1>Chess Move Analyzer</h1>
-    <form id="upload-form" enctype="multipart/form-data">
-        <input type="text" name="moves" placeholder="Enter moves in SAN format (e.g., e4 e5)" required>
-        <button type="button" onclick="uploadFile()">Analyze</button>
+    <form id="upload-form">
+        <label for="moves">Enter moves in SAN format:</label>
+        <input type="text" id="moves" name="moves" required>
+        <button type="button" onclick="uploadMoves()">Analyze</button>
     </form>
     <div id="result"></div>
 
     <script>
-        function uploadFile() {
-            const movesInput = document.querySelector('input[name="moves"]');
-            const formData = new FormData();
-            formData.append('moves', movesInput.value);
+        function uploadMoves() {
+            const movesInput = document.getElementById('moves');
+            const resultElement = document.getElementById('result');
 
             fetch('/upload', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'moves=' + encodeURIComponent(movesInput.value),
             })
             .then(response => response.json())
             .then(data => {
-                const resultElement = document.getElementById('result');
-                if (data.success) {
-                    resultElement.className = '';
-                    resultElement.innerText = data.success;
-                } else {
-                    resultElement.className = 'error';
-                    resultElement.innerText = data.error;
-                }
+                resultElement.innerHTML = data.success || data.error;
             })
             .catch(error => {
                 console.error('Error:', error);
