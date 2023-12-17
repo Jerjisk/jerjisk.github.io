@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Move Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Chess Move Analyzer</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="text" name="moves" placeholder="Enter moves in SAN format (e.g., e4 e5)" required>
+        <button type="button" onclick="uploadFile()">Analyze</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        function uploadFile() {
+            const movesInput = document.querySelector('input[name="moves"]');
+            const formData = new FormData();
+            formData.append('moves', movesInput.value);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultElement = document.getElementById('result');
+                if (data.success) {
+                    resultElement.className = '';
+                    resultElement.innerText = data.success;
+                } else {
+                    resultElement.className = 'error';
+                    resultElement.innerText = data.error;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
